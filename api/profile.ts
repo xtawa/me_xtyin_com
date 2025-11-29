@@ -1,6 +1,35 @@
 import { Client } from '@notionhq/client';
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 
+// Helper to convert Notion rich_text array to HTML
+const notionRichTextToHtml = (richText: any[]) => {
+  if (!Array.isArray(richText)) return '';
+  
+  return richText.map((chunk) => {
+    // Basic safety escaping for the content text
+    let text = chunk.plain_text
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#039;");
+
+    const { bold, italic, underline, strikethrough, code, color } = chunk.annotations;
+
+    if (bold) text = `<strong>${text}</strong>`;
+    if (italic) text = `<em>${text}</em>`;
+    if (underline) text = `<u>${text}</u>`;
+    if (strikethrough) text = `<s>${text}</s>`;
+    if (code) text = `<code style="background:rgba(255,255,255,0.15); padding: 0.1em 0.3em; border-radius: 3px; font-family: monospace;">${text}</code>`;
+
+    if (chunk.href) {
+      text = `<a href="${chunk.href}" target="_blank" rel="noopener noreferrer" style="text-decoration: underline; text-underline-offset: 4px;">${text}</a>`;
+    }
+
+    return text;
+  }).join('');
+};
+
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   const notionToken = process.env.NOTION_TOKEN;
   const databaseId = process.env.NOTION_DATABASE_ID;
@@ -51,7 +80,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       let value = '';
       switch (valProp.type) {
         case 'rich_text':
-          value = valProp.rich_text?.map((t: any) => t.plain_text).join('');
+          // Use the HTML converter for rich text fields to preserve formatting
+          value = notionRichTextToHtml(valProp.rich_text);
           break;
         case 'url':
           value = valProp.url || '';

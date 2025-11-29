@@ -172,7 +172,14 @@ const App: React.FC = () => {
             </div>
 
             <div 
-              className="space-y-6 text-neutral-400 leading-relaxed max-w-prose whitespace-pre-wrap break-words"
+              className="
+                space-y-6 text-neutral-400 leading-relaxed max-w-prose whitespace-pre-wrap break-words
+                [&_a]:text-white [&_a]:underline [&_a]:underline-offset-4 [&_a:hover]:text-blue-400 [&_a]:transition-colors
+                [&_b]:font-bold [&_b]:text-neutral-200
+                [&_strong]:font-bold [&_strong]:text-neutral-200
+                [&_i]:italic [&_em]:italic
+                [&_u]:underline
+              "
               dangerouslySetInnerHTML={{ __html: content.myself }}
             />
           </section>
