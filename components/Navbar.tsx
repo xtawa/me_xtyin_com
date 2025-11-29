@@ -1,6 +1,6 @@
 import React from 'react';
 import { Github, Rss, Moon } from 'lucide-react';
-import logo from '../logo.svg';
+import logo from '../logo.png';
 
 const NavItem = ({ 
   children, 
