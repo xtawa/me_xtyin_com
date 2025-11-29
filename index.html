@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Anthony Fu (Clone)</title>
-    <link rel="icon" type="image/svg+xml" href="logo.svg" />
+    <link rel="icon" type="image/svg+xml" href="/logo.svg" />
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -78,12 +78,15 @@
     "@vercel/node": "https://aistudiocdn.com/@vercel/node@^5.5.13",
     "@notionhq/client": "https://aistudiocdn.com/@notionhq/client@^5.4.0",
     "path": "https://aistudiocdn.com/path@^0.12.7",
-    "fs": "https://aistudiocdn.com/fs@^0.0.1-security"
+    "fs": "https://aistudiocdn.com/fs@^0.0.1-security",
+    "vite": "https://aistudiocdn.com/vite@^7.2.4",
+    "@vitejs/plugin-react": "https://aistudiocdn.com/@vitejs/plugin-react@^5.1.1"
   }
 }
 </script>
 </head>
   <body>
     <div id="root"></div>
+    <script type="module" src="/index.tsx"></script>
   </body>
 </html>

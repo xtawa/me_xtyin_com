@@ -60,12 +60,11 @@ To populate the "Photos" tab:
 2. Place your images (`.jpg`, `.png`, `.webp`) inside `public/photos/`. / 将你的图片（`.jpg`, `.png`, `.webp`）放入 `public/photos/` 中。
 3. The app will automatically scan this folder and create the scrolling effect. / 程序会自动扫描该文件夹并生成滚动效果。
 
-> **Note**: If deploying to Vercel, ensure the `public/photos` folder is included in the build output.
-> **注意**：如果部署到 Vercel，请确保 `public/photos` 文件夹包含在构建输出中。
-
 ---
 
 ## 💻 Local Development / 本地开发
+
+This project uses **Vite** for fast development and building.
 
 1. Clone the repo. / 克隆仓库。
 2. Install dependencies: / 安装依赖：
@@ -77,44 +76,11 @@ To populate the "Photos" tab:
    NOTION_TOKEN=secret_your_token_here
    NOTION_DATABASE_ID=your_database_id_here
    ```
-4. Start the server: / 启动服务器：
+4. Start the dev server: / 启动服务器：
    ```bash
-   npm start
+   npm run dev
    ```
-
----
-
-## ❓ Troubleshooting / 故障排除
-
-### Build Error: `npm error ERESOLVE` (Dependency Conflict)
-If you see an error like `ERESOLVE could not resolve` or `Conflicting peer dependency: typescript@4.9.5`:
-如果你看到 `ERESOLVE could not resolve` 或依赖冲突错误：
-
-**Solution / 解决方法:**
-This happens because `react-scripts` v5 requires TypeScript 4.x, but newer projects default to 5.x.
-Ensure your `package.json` has compatible versions:
-这是因为 `react-scripts` v5 需要 TypeScript 4.x。请确保你的 `package.json` 版本兼容：
-```json
-"dependencies": {
-  "react": "^18.3.1",
-  "react-dom": "^18.3.1",
-  "react-scripts": "^5.0.1"
-},
-"devDependencies": {
-  "typescript": "^4.9.5"
-}
-```
-Or run install with the legacy flag:
-或者使用 legacy 标志安装：
-```bash
-npm install --legacy-peer-deps
-```
-
-### Build Error: `react-scripts: command not found`
-If you see this error during deployment:
-如果部署时看到此错误：
-```
-sh: line 1: react-scripts: command not found
-```
-**Solution / 解决方法:**
-Run / 运行: `npm install react-scripts --save`
+5. Build for production: / 构建生产版本：
+   ```bash
+   npm run build
+   ```

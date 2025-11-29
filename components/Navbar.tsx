@@ -1,5 +1,6 @@
 import React from 'react';
 import { Github, Rss, Moon } from 'lucide-react';
+import logo from '../logo.svg';
 
 const NavItem = ({ 
   children, 
@@ -43,7 +44,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onNavigate }) => {
           onClick={handleNavClick('home')}
           className="block w-8 h-8 opacity-90 hover:opacity-100 transition-opacity"
         >
-          <img src="logo.svg" alt="Logo" className="w-full h-full object-contain" />
+          <img src={logo} alt="Logo" className="w-full h-full object-contain" />
         </a>
       </div>
 
