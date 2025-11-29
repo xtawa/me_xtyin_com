@@ -30,7 +30,7 @@ To make the dynamic content work, you need to set up a Notion Database and conne
 | `headline` | Your Headline | Displayed below the title. / 显示在标题下方。 |
 | `myself` | `<p>HTML content...</p>` | Your bio. Supports HTML tags. / 个人简介。支持 HTML 标签。 |
 | `blog_url` | `https://yourblog.com` | The URL loaded in the "Blog" window. / "Blog" 窗口加载的链接。 |
-| `siteTitle` | `title` | The browser tab title. / 浏览器标签页标题。 |
+| `siteTitle` | `Anthony Fu` | The browser tab title. / 浏览器标签页标题。 |
 | `photosFile` | `url1;url2;url3` | Image URLs for the photo wall, separated by semicolons. / 照片墙的图片链接，用分号分隔。 |
 
 ### 3. Connect Database / 连接数据库

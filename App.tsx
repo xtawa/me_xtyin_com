@@ -21,12 +21,7 @@ interface ProfileContent {
 const DEFAULT_CONTENT: ProfileContent = {
   name: "Loading...",
   headline: "A personal homepage project made by Coisini Luo.",
-  myself: `
-    <p class="mb-6">
-      Turning ideas into reality.
-      当你看到此行时，说明页面加载缓慢或者你的数据库配置失败.参考本项目README文件获得进一步支持。
-    </p>
-  `,
+  myself: `<p class="mb-6">Turning ideas into reality. 当你看到此行时，说明页面加载缓慢或者你的数据库配置失败.参考本项目README文件获得进一步支持。</p>`,
   blog_url: "https://blog.xtyin.com",
   siteTitle: "Loading...",
   photosFile: ""
@@ -177,7 +172,7 @@ const App: React.FC = () => {
             </div>
 
             <div 
-              className="space-y-6 text-neutral-400 leading-relaxed max-w-prose"
+              className="space-y-6 text-neutral-400 leading-relaxed max-w-prose whitespace-pre-wrap break-words"
               dangerouslySetInnerHTML={{ __html: content.myself }}
             />
           </section>
@@ -189,7 +184,7 @@ const App: React.FC = () => {
                   <a href="#" className="hover:text-neutral-300 transition-colors">Creative Commons BY-NC-SA 4.0</a>
               </div>
               <div className="text-neutral-600">
-                  Homepage © {content.name}
+                  2024 © {content.name}
               </div>
           </footer>
         </main>
