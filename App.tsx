@@ -15,18 +15,32 @@ interface ProfileContent {
   myself: string; // Supports raw HTML for links/formatting
   blog_url: string;
   siteTitle: string;
+  photosFile: string; // Semicolon separated URLs
 }
 
 const DEFAULT_CONTENT: ProfileContent = {
-  name: "Loading...",
-  headline: "A homepage project made by Coisini Luo. -Turning ideas into reality,one pixel at one time.",
+  name: "Anthony Fu",
+  headline: "Hey! I'm Anthony Fu, a fanatical open sourceror and design engineer.",
   myself: `
+    <p class="mb-6">
+      Dreaming up cool ideas and making them come true is where my passion lies. 
+      I am enthusiastic about building tools that help myself and others to be more productive 
+      and enjoy the process of crafting. You can find my <a href="#" class="text-white underline decoration-neutral-600 underline-offset-4 hover:decoration-white transition-all">full projects list here</a>.
+    </p>
+    <p class="mb-6">
+      I give <span class="text-white font-medium">talks</span> and write <span class="text-white font-medium">blog posts</span> about open source, coding, etc. 
+      Occasionally, I do live coding streams on <span class="text-white font-medium">YouTube</span> and <span class="text-white font-medium">哔哩哔哩</span>. 
+      I am also co-hosting a podcast <em class="text-white font-serif">No Coding Today</em> (in Mandarin), talking about various topics around programming. 
+      From time to time, I make some generative-art, interactivity experiments on <span class="text-white font-medium">100.antfu.me</span>.
+    </p>
     <p>
-       If you see this content,it means your Notion database or serverless deploy platforms' config file didn't work properly.Check the project's README file for more information.
+       Outside of programming, I enjoy photography and traveling. Some of my photos can be found on <a href="#" class="text-white underline decoration-neutral-600 underline-offset-4 hover:decoration-white transition-all">Instagram</a>.
+       If you happen to be in the same city I live (currently in <b>Paris</b>), maybe we can hang out and grab some coffee or beer.
     </p>
   `,
-  blog_url: "",
-  siteTitle: "Personal homepage"
+  blog_url: "https://blog.xtyin.com",
+  siteTitle: "Anthony Fu (Clone)",
+  photosFile: ""
 };
 
 const App: React.FC = () => {
@@ -66,21 +80,19 @@ const App: React.FC = () => {
     document.title = content.siteTitle;
   }, [content.siteTitle]);
 
+  // Parse photos from content.photosFile string (semicolon separated)
   useEffect(() => {
-    async function fetchPhotos() {
-        try {
-            const res = await fetch('/api/photos');
-            if (res.ok) {
-                const files = await res.json();
-                setPhotos(files);
-            }
-        } catch (error) {
-            console.error("Failed to fetch photos:", error);
-        }
+    if (content.photosFile) {
+        const urls = content.photosFile
+            .split(';')
+            .map(url => url.trim())
+            .filter(url => url.length > 0);
+        setPhotos(urls);
     }
+  }, [content.photosFile]);
 
+  useEffect(() => {
     fetchProfile();
-    fetchPhotos();
   }, [fetchProfile]);
 
   const handleNavigate = (view: string) => {
@@ -229,7 +241,7 @@ const App: React.FC = () => {
         <main className="relative w-full h-screen overflow-hidden bg-black">
            {photos.length === 0 ? (
              <div className="flex items-center justify-center h-full text-neutral-500">
-               No photos found in /photos directory.
+               No photos configured. Add "photosFile" to Notion.
              </div>
            ) : (
              <div className="grid grid-cols-2 md:grid-cols-3 gap-4 h-full w-full max-w-[1600px] mx-auto px-4">
@@ -242,10 +254,10 @@ const App: React.FC = () => {
                   return (
                     <div key={colIndex} className="relative h-full overflow-hidden mask-linear-fade">
                       <div className={`flex flex-col gap-4 w-full ${animationClass}`}>
-                        {loopPhotos.map((photo, idx) => (
+                        {loopPhotos.map((photoUrl, idx) => (
                            <div key={`${colIndex}-${idx}`} className="w-full aspect-square overflow-hidden rounded-lg bg-neutral-900 border border-neutral-800 hover:opacity-80 transition-opacity">
                               <img 
-                                src={`/photos/${photo}`} 
+                                src={photoUrl} 
                                 alt="Gallery" 
                                 className="w-full h-full object-cover"
                                 loading="lazy"

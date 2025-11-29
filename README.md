@@ -28,9 +28,10 @@ To make the dynamic content work, you need to set up a Notion Database and conne
 | :--- | :--- | :--- |
 | `name` | Your Name | Displayed in the main title. / 显示在主标题。 |
 | `headline` | Your Headline | Displayed below the title. / 显示在标题下方。 |
-| `myself` | `<p>HTML content...</p>` | Your bio. Supports HTML tags like `<a>`, `<b>`, `<p>`. / 个人简介。支持 HTML 标签。 |
+| `myself` | `<p>HTML content...</p>` | Your bio. Supports HTML tags. / 个人简介。支持 HTML 标签。 |
 | `blog_url` | `https://yourblog.com` | The URL loaded in the "Blog" window. / "Blog" 窗口加载的链接。 |
 | `siteTitle` | `Anthony Fu` | The browser tab title. / 浏览器标签页标题。 |
+| `photosFile` | `url1;url2;url3` | Image URLs for the photo wall, separated by semicolons. / 照片墙的图片链接，用分号分隔。 |
 
 ### 3. Connect Database / 连接数据库
 1. Open your new Database page. / 打开你的新数据库页面。
@@ -49,17 +50,6 @@ When deploying to Vercel or Netlify, add the following Environment Variables in 
 
 - `NOTION_TOKEN`: Your Integration Secret (from Step 1) / 你的集成 Secret
 - `NOTION_DATABASE_ID`: Your Database ID (from Step 3) / 你的数据库 ID
-
----
-
-## 📸 Photo Wall Configuration / 照片墙配置
-
-To populate the "Photos" tab:
-填充“Photos”标签页：
-
-1. Create a folder named `photos` inside the `public` directory. / 在 `public` 目录下创建一个名为 `photos` 的文件夹。
-2. Place your images (`.jpg`, `.png`, `.webp`) inside `public/photos/`. / 将你的图片（`.jpg`, `.png`, `.webp`）放入 `public/photos/` 中。
-3. The app will automatically scan this folder and create the scrolling effect. / 程序会自动扫描该文件夹并生成滚动效果。
 
 ---
 
