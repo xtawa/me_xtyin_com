@@ -25,7 +25,7 @@ const DEFAULT_CONTENT: ProfileContent = {
        If you see this content,it means your Notion database or serverless deploy platforms' config file didn't work properly.Check the project's README file for more information.
     </p>
   `,
-  blog_url: "https://blog.xtyin.com",
+  blog_url: "",
   siteTitle: "Personal homepage"
 };
 
