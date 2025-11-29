@@ -14,6 +14,7 @@ interface ProfileContent {
   headline: string;
   myself: string; // Supports raw HTML for links/formatting
   blog_url: string;
+  siteTitle: string;
 }
 
 const DEFAULT_CONTENT: ProfileContent = {
@@ -36,7 +37,8 @@ const DEFAULT_CONTENT: ProfileContent = {
        If you happen to be in the same city I live (currently in <b>Paris</b>), maybe we can hang out and grab some coffee or beer.
     </p>
   `,
-  blog_url: "https://blog.xtyin.com"
+  blog_url: "https://blog.xtyin.com",
+  siteTitle: "Anthony Fu (Clone)"
 };
 
 const App: React.FC = () => {
@@ -66,9 +68,15 @@ const App: React.FC = () => {
     } catch (error) {
       console.error("Failed to fetch profile content:", error);
     } finally {
-      setIsLoading(false);
+      // Small delay to ensure smooth transition
+      setTimeout(() => setIsLoading(false), 500);
     }
   }, []);
+
+  // Effect to update document title based on content
+  useEffect(() => {
+    document.title = content.siteTitle;
+  }, [content.siteTitle]);
 
   useEffect(() => {
     async function fetchPhotos() {
@@ -138,6 +146,19 @@ const App: React.FC = () => {
   return (
     <div className="min-h-screen text-neutral-300 selection:bg-[#3d4d42] selection:text-white font-sans bg-[#050505] overflow-hidden">
       <div className="fixed inset-0 bg-dot-pattern pointer-events-none opacity-20 h-screen" />
+
+      {/* Preloader Overlay */}
+      <div 
+        className={`fixed inset-0 z-[100] bg-[#050505] flex items-center justify-center transition-opacity duration-700 ease-in-out ${isLoading ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
+      >
+        <div className="flex flex-col items-center gap-6">
+           {/* Logo Pulse Animation */}
+           <div className="relative w-16 h-16 flex items-center justify-center">
+              <div className="absolute inset-0 rounded-full bg-white/5 animate-ping" />
+              <img src="/logo.png" alt="Loading" className="w-10 h-10 object-contain relative z-10 opacity-90" />
+           </div>
+        </div>
+      </div>
       
       <Navbar onNavigate={handleNavigate} />
 
@@ -145,7 +166,7 @@ const App: React.FC = () => {
       {currentView === 'home' && (
         <main className="relative max-w-screen-md mx-auto px-6 pt-32 pb-20 md:pt-40 md:px-0 overflow-y-auto h-screen no-scrollbar">
           <section className="mb-16 animate-fade-in-up">
-            <h1 className={`text-4xl md:text-5xl font-bold text-white mb-6 tracking-tight transition-opacity duration-500 ${isLoading ? 'opacity-80' : 'opacity-100'}`}>
+            <h1 className={`text-4xl md:text-5xl font-bold text-white mb-6 tracking-tight transition-opacity duration-500`}>
               {content.name}
             </h1>
             
