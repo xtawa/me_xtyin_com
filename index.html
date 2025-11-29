@@ -28,6 +28,7 @@
               'scroll-up': 'scroll-up 40s linear infinite',
               'scroll-down': 'scroll-down 40s linear infinite',
               'fade-in-up': 'fadeInUp 0.5s ease-out forwards',
+              'mac-progress': 'mac-progress 2s ease-out forwards',
             },
             keyframes: {
               'scroll-up': {
@@ -41,6 +42,10 @@
               fadeInUp: {
                 '0%': { opacity: '0', transform: 'translateY(10px)' },
                 '100%': { opacity: '1', transform: 'translateY(0)' },
+              },
+              'mac-progress': {
+                '0%': { width: '0%' },
+                '100%': { width: '100%' },
               }
             }
           },
