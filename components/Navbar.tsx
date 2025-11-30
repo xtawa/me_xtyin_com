@@ -1,6 +1,7 @@
 import React from 'react';
 import { Github } from 'lucide-react';
-import logo from '../logo.png';
+
+const logo = '/logo.png';
 
 const NavItem = ({ 
   children, 
@@ -51,6 +52,8 @@ export const Navbar: React.FC<NavbarProps> = ({ onNavigate }) => {
       {/* Navigation Links */}
       <nav className="flex items-center gap-5 md:gap-6 text-sm font-medium pointer-events-auto">
         <NavItem href="#blog" onClick={handleNavClick('blog')}>Blog</NavItem>
+        <NavItem href="#projects" onClick={handleNavClick('projects')}>Projects</NavItem>
+        <NavItem href="#talks" onClick={handleNavClick('talks')}>Talks</NavItem>
         <NavItem href="#photos" hideOnMobile onClick={handleNavClick('photos')}>Photos</NavItem>
 
         <div className="w-[1px] h-4 bg-neutral-800 mx-1 hidden sm:block"></div>

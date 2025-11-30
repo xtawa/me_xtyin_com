@@ -6,8 +6,21 @@ import {
   Globe,
   Twitter,
   Send,
-  Github
+  Github,
+  Folder,
+  ArrowUpRight
 } from 'lucide-react';
+
+interface NotionProjectItem {
+  text: string;
+  description?: string;
+  href?: string;
+  icon?: {
+    type: 'emoji' | 'image';
+    value: string;
+  };
+  date?: string; // New field for Talks
+}
 
 interface ProfileContent {
   name: string;
@@ -16,6 +29,8 @@ interface ProfileContent {
   blog_url: string;
   siteTitle: string;
   photosFile: string; // Semicolon separated URLs
+  projects?: NotionProjectItem[]; // Dynamic projects from Notion
+  talks?: NotionProjectItem[]; // Dynamic talks from Notion
 }
 
 const DEFAULT_CONTENT: ProfileContent = {
@@ -24,13 +39,15 @@ const DEFAULT_CONTENT: ProfileContent = {
   myself: `<p class="mb-6">Turning ideas into reality. 当你看到此行时，说明页面加载缓慢或者你的数据库配置失败.参考本项目README文件获得进一步支持。</p>`,
   blog_url: "https://blog.xtyin.com",
   siteTitle: "Loading...",
-  photosFile: ""
+  photosFile: "",
+  projects: [],
+  talks: []
 };
 
 const App: React.FC = () => {
   const [content, setContent] = useState<ProfileContent>(DEFAULT_CONTENT);
   const [isLoading, setIsLoading] = useState(true);
-  const [currentView, setCurrentView] = useState<'home' | 'blog' | 'photos'>('home');
+  const [currentView, setCurrentView] = useState<'home' | 'blog' | 'photos' | 'projects' | 'talks'>('home');
   const [photos, setPhotos] = useState<string[]>([]);
 
   const fetchProfile = useCallback(async () => {
@@ -80,8 +97,8 @@ const App: React.FC = () => {
   }, [fetchProfile]);
 
   const handleNavigate = (view: string) => {
-    if (view === 'home' || view === 'blog' || view === 'photos') {
-      setCurrentView(view as 'home' | 'blog' | 'photos');
+    if (['home', 'blog', 'photos', 'projects', 'talks'].includes(view)) {
+      setCurrentView(view as any);
       if (view !== 'photos') {
           window.scrollTo(0, 0);
       }
@@ -224,6 +241,100 @@ const App: React.FC = () => {
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
             />
           </div>
+        </main>
+      )}
+
+      {/* PROJECTS VIEW */}
+      {currentView === 'projects' && (
+        <main className="relative max-w-screen-lg mx-auto px-6 pt-32 pb-20 md:pt-40 md:px-0 h-screen overflow-y-auto no-scrollbar animate-fade-in-up">
+           <h1 className="text-4xl font-bold text-white mb-8">Projects</h1>
+           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pb-20">
+              {(!content.projects || content.projects.length === 0) ? (
+                 <div className="text-neutral-500 col-span-2">
+                   No projects found. Add items with "Tags" = "projects" in Notion.
+                 </div>
+              ) : (
+                content.projects.map((item, idx) => {
+                  const Wrapper = item.href ? 'a' : 'div';
+                  const wrapperProps = item.href ? {
+                     href: item.href,
+                     target: item.href.startsWith('http') ? '_blank' : undefined,
+                     rel: "noopener noreferrer"
+                  } : {};
+
+                  return (
+                    <Wrapper 
+                      key={idx} 
+                      {...wrapperProps}
+                      className={`block p-6 rounded-lg bg-neutral-900 border border-neutral-800 transition-colors group relative ${item.href ? 'hover:bg-neutral-800 cursor-pointer' : ''}`}
+                    >
+                      <div className="flex items-start justify-between mb-4">
+                          <div className="p-2 rounded bg-neutral-800 group-hover:bg-neutral-700 transition-colors text-neutral-400">
+                            {item.icon ? (
+                              item.icon.type === 'emoji' ? (
+                                  <span className="text-xl leading-none">{item.icon.value}</span>
+                              ) : (
+                                  <img src={item.icon.value} alt="icon" className="w-6 h-6 object-contain" />
+                              )
+                            ) : (
+                              <Folder size={24} />
+                            )}
+                          </div>
+                          {item.href && (
+                            <ArrowUpRight size={20} className="text-neutral-500 opacity-0 group-hover:opacity-100 transition-opacity" />
+                          )}
+                      </div>
+                      <h3 className="text-xl font-semibold text-neutral-200 mb-2">{item.text}</h3>
+                      {item.description && (
+                        <p className="text-neutral-500 text-sm line-clamp-2">
+                            {item.description}
+                        </p>
+                      )}
+                    </Wrapper>
+                  );
+                })
+              )}
+           </div>
+        </main>
+      )}
+
+      {/* TALKS VIEW */}
+      {currentView === 'talks' && (
+        <main className="relative max-w-screen-lg mx-auto px-6 pt-32 pb-20 md:pt-40 md:px-0 h-screen overflow-y-auto no-scrollbar animate-fade-in-up">
+           <h1 className="text-4xl font-bold text-white mb-10">Talks</h1>
+           <div className="flex flex-col gap-6 pb-20">
+              {(!content.talks || content.talks.length === 0) ? (
+                 <div className="text-neutral-500">
+                   No talks found. Add items with "Tags" = "talks" in Notion.
+                 </div>
+              ) : (
+                content.talks.map((item, idx) => (
+                  <a 
+                    key={idx} 
+                    href={item.href || '#'} 
+                    target={item.href?.startsWith('http') ? '_blank' : undefined}
+                    rel="noopener noreferrer"
+                    className="block group"
+                  >
+                     <div className="flex flex-col sm:flex-row sm:items-baseline gap-1 sm:gap-6">
+                        <div className="text-neutral-500 font-mono text-sm shrink-0 w-32 tabular-nums">
+                            {item.date || 'Unknown Date'}
+                        </div>
+                        <div className="flex-1">
+                            <h3 className="text-lg md:text-xl font-medium text-neutral-200 group-hover:text-blue-400 transition-colors leading-snug mb-1">
+                                {item.text}
+                            </h3>
+                            {item.description && (
+                                <p className="text-neutral-500 text-sm">
+                                    {item.description}
+                                </p>
+                            )}
+                        </div>
+                     </div>
+                  </a>
+                ))
+              )}
+           </div>
         </main>
       )}
 

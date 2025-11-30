@@ -51,62 +51,190 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       database_id: databaseId,
     });
 
-    const data: Record<string, string> = {};
+    const configData: Record<string, string> = {};
+    const projects: any[] = [];
+    const talks: any[] = [];
 
     response.results.forEach((page: any) => {
       const props = page.properties;
       const propKeys = Object.keys(props);
 
-      // Intelligent Column Detection (Case-insensitive)
-      // 1. Find the Key column (usually type 'title', names: Title, Key, Name)
-      const keyColName = propKeys.find(k => /^(title|key|name)$/i.test(k));
-      // 2. Find the Value column (usually type 'rich_text', names: Value, Text, Content)
-      const valColName = propKeys.find(k => /^(value|text|content)$/i.test(k));
+      // --- Column Detection ---
+      
+      // 1. Identify "Tags" column for filtering projects/talks
+      const tagColName = propKeys.find(k => /^(tags|tag)$/i.test(k));
+      
+      // 2. Identify "Link" or "URL" column for project links
+      const linkColName = propKeys.find(k => /^(link|url|href|website)$/i.test(k));
 
-      if (!keyColName || !valColName) return;
+      // 3. Identify Key/Title column (Name)
+      const keyColName = propKeys.find(k => /^(title|key|name)$/i.test(k));
+      
+      // 4. Identify Value/Description column
+      const valColName = propKeys.find(k => /^(value|text|content|description|desc)$/i.test(k));
+
+      // 5. Identify Icon column
+      const iconColName = propKeys.find(k => /^(icon|image|img)$/i.test(k));
+
+      // 6. Identify Date column
+      const dateColName = propKeys.find(k => /^(date|time|when|day)$/i.test(k));
+
+      if (!keyColName) return; // Skip if no primary key column
 
       const keyProp = props[keyColName];
-      const valProp = props[valColName];
+      const valProp = valColName ? props[valColName] : null;
+      const tagProp = tagColName ? props[tagColName] : null;
+      const linkProp = linkColName ? props[linkColName] : null;
+      const iconProp = iconColName ? props[iconColName] : null;
+      const dateProp = dateColName ? props[dateColName] : null;
 
-      // Extract Key String
-      let key = '';
+      // --- Check Row Type ---
+      let isProject = false;
+      let isTalk = false;
+
+      if (tagProp) {
+        let tagValues: string[] = [];
+        if (tagProp.type === 'multi_select') {
+          tagValues = tagProp.multi_select.map((t: any) => t.name.toLowerCase());
+        } else if (tagProp.type === 'select' && tagProp.select) {
+          tagValues = [tagProp.select.name.toLowerCase()];
+        }
+
+        if (tagValues.includes('projects')) isProject = true;
+        if (tagValues.includes('talks')) isTalk = true;
+      }
+
+      // Extract Title (Common for all)
+      let title = '';
       if (keyProp.type === 'title') {
-        key = keyProp.title?.[0]?.plain_text;
+        title = keyProp.title?.[0]?.plain_text || '';
       } else if (keyProp.type === 'rich_text') {
-        key = keyProp.rich_text?.map((t: any) => t.plain_text).join('');
+        title = keyProp.rich_text?.map((t: any) => t.plain_text).join('');
       }
 
-      // Extract Value String (Support multiple Notion property types)
-      let value = '';
-      switch (valProp.type) {
-        case 'rich_text':
-          // Use the HTML converter for rich text fields to preserve formatting
-          value = notionRichTextToHtml(valProp.rich_text);
-          break;
-        case 'url':
-          value = valProp.url || '';
-          break;
-        case 'email':
-          value = valProp.email || '';
-          break;
-        case 'phone_number':
-          value = valProp.phone_number || '';
-          break;
-        case 'number':
-          value = String(valProp.number || '');
-          break;
-        case 'title':
-             value = valProp.title?.map((t: any) => t.plain_text).join('');
-             break;
-      }
+      if (!title) return;
 
-      if (key && value) {
-        data[key] = value;
+      if (isProject || isTalk) {
+        // --- Process List Item (Project or Talk) ---
+        let description = '';
+        if (valProp) {
+             if (valProp.type === 'rich_text') {
+                 description = valProp.rich_text?.map((t: any) => t.plain_text).join('');
+             } else if (valProp.type === 'url') {
+                 description = valProp.url || '';
+             }
+        }
+
+        let link = '';
+        if (linkProp) {
+            if (linkProp.type === 'url') link = linkProp.url || '';
+            else if (linkProp.type === 'rich_text') link = linkProp.rich_text?.[0]?.plain_text || '';
+        }
+        link = link.trim();
+
+        // Extract Date (Mostly for Talks)
+        let date = '';
+        if (dateProp) {
+            if (dateProp.type === 'date') {
+                date = dateProp.date?.start || '';
+            } else if (dateProp.type === 'rich_text') {
+                date = dateProp.rich_text?.map((t: any) => t.plain_text).join('');
+            }
+        }
+
+        // Extract Icon from Column
+        let iconValue = '';
+        if (iconProp) {
+            if (iconProp.type === 'rich_text') {
+                iconValue = iconProp.rich_text?.map((t: any) => t.plain_text).join('');
+            } else if (iconProp.type === 'url') {
+                iconValue = iconProp.url || '';
+            } else if (iconProp.type === 'files') {
+                iconValue = iconProp.files?.[0]?.file?.url || iconProp.files?.[0]?.external?.url || '';
+            }
+        }
+
+        let icon: { type: 'emoji' | 'image', value: string } | null = null;
+        
+        if (iconValue) {
+            const trimmed = iconValue.trim();
+            if (trimmed.startsWith('http') || trimmed.startsWith('/') || trimmed.startsWith('data:')) {
+                icon = { type: 'image', value: trimmed };
+            } else {
+                icon = { type: 'emoji', value: trimmed };
+            }
+        } else if (page.icon) {
+            // Fallback to Page Icon if column is empty
+            if (page.icon.type === 'emoji') {
+                icon = { type: 'emoji', value: page.icon.emoji };
+            } else if (page.icon.type === 'file') {
+                icon = { type: 'image', value: page.icon.file.url };
+            } else if (page.icon.type === 'external') {
+                icon = { type: 'image', value: page.icon.external.url };
+            }
+        }
+
+        const item = {
+            text: title,
+            description,
+            href: link,
+            icon,
+            date
+        };
+
+        if (isProject) projects.push(item);
+        if (isTalk) talks.push(item);
+
+      } else {
+        // --- Process Config Row ---
+        if (!valProp) return; // Config rows must have values
+
+        let value = '';
+
+        // Special handling for photosFile (Plain Text)
+        if (title.toLowerCase() === 'photosfile' && valProp.type === 'rich_text') {
+            value = valProp.rich_text?.map((t: any) => t.plain_text).join('');
+        } else {
+            // General Handling
+            switch (valProp.type) {
+                case 'rich_text':
+                value = notionRichTextToHtml(valProp.rich_text);
+                break;
+                case 'url':
+                value = valProp.url || '';
+                break;
+                case 'email':
+                value = valProp.email || '';
+                break;
+                case 'phone_number':
+                value = valProp.phone_number || '';
+                break;
+                case 'number':
+                value = String(valProp.number || '');
+                break;
+                case 'title':
+                value = valProp.title?.map((t: any) => t.plain_text).join('');
+                break;
+            }
+        }
+
+        if (value) {
+            configData[title] = value;
+        }
       }
     });
 
-    console.log("Fetched Notion Data Keys:", Object.keys(data));
-    return res.status(200).json(data);
+    // Merge projects into the response
+    const responseData = {
+        ...configData,
+        projects,
+        talks
+    };
+
+    console.log("Fetched Notion Keys:", Object.keys(configData));
+    console.log(`Fetched ${projects.length} Projects, ${talks.length} Talks`);
+    
+    return res.status(200).json(responseData);
 
   } catch (error: any) {
     console.error('Notion API Error:', error);
