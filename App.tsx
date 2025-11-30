@@ -145,7 +145,7 @@ const App: React.FC = () => {
   const photoColumns = getColumns(photos.length > 0 ? photos : [], 3);
 
   return (
-    <div className="min-h-screen text-neutral-300 selection:bg-[#3d4d42] selection:text-white font-sans bg-[#050505] overflow-hidden">
+    <div className={`min-h-screen text-neutral-300 selection:bg-[#3d4d42] selection:text-white font-sans bg-[#050505] ${currentView === 'photos' ? 'overflow-hidden' : ''}`}>
       <div className="fixed inset-0 bg-dot-pattern pointer-events-none opacity-20 h-screen" />
 
       {/* Preloader Overlay (Mac-style Startup) */}
@@ -165,7 +165,7 @@ const App: React.FC = () => {
 
       {/* HOME VIEW */}
       {currentView === 'home' && (
-        <main className="relative max-w-screen-md mx-auto px-6 pt-32 pb-20 md:pt-40 md:px-0 overflow-y-auto h-screen no-scrollbar">
+        <main className="relative max-w-screen-md mx-auto px-6 pt-32 pb-20 md:pt-40">
           <section className="mb-16 animate-fade-in-up">
             <h1 className={`text-4xl md:text-5xl font-bold text-white mb-6 tracking-tight transition-opacity duration-500`}>
               {content.name}
@@ -246,7 +246,7 @@ const App: React.FC = () => {
 
       {/* PROJECTS VIEW */}
       {currentView === 'projects' && (
-        <main className="relative max-w-screen-lg mx-auto px-6 pt-32 pb-20 md:pt-40 md:px-0 h-screen overflow-y-auto no-scrollbar animate-fade-in-up">
+        <main className="relative max-w-screen-lg mx-auto px-6 pt-32 pb-20 md:pt-40 animate-fade-in-up">
            <h1 className="text-4xl font-bold text-white mb-8">Projects</h1>
            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pb-20">
               {(!content.projects || content.projects.length === 0) ? (
@@ -300,7 +300,7 @@ const App: React.FC = () => {
 
       {/* TALKS VIEW */}
       {currentView === 'talks' && (
-        <main className="relative max-w-screen-lg mx-auto px-6 pt-32 pb-20 md:pt-40 md:px-0 h-screen overflow-y-auto no-scrollbar animate-fade-in-up">
+        <main className="relative max-w-screen-lg mx-auto px-6 pt-32 pb-20 md:pt-40 animate-fade-in-up">
            <h1 className="text-4xl font-bold text-white mb-10">Talks</h1>
            <div className="flex flex-col gap-6 pb-20">
               {(!content.talks || content.talks.length === 0) ? (
