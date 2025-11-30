@@ -119,7 +119,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         let description = '';
         if (valProp) {
              if (valProp.type === 'rich_text') {
-                 description = valProp.rich_text?.map((t: any) => t.plain_text).join('');
+                 // Use HTML converter for descriptions to support rich text and links
+                 description = notionRichTextToHtml(valProp.rich_text);
              } else if (valProp.type === 'url') {
                  description = valProp.url || '';
              }

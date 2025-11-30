@@ -165,7 +165,7 @@ const App: React.FC = () => {
 
       {/* HOME VIEW */}
       {currentView === 'home' && (
-        <main className="relative max-w-screen-md mx-auto px-6 pt-32 pb-20 md:pt-40">
+        <main className="relative max-w-screen-md mx-auto px-6 md:px-8 pt-32 pb-20 md:pt-40">
           <section className="mb-16 animate-fade-in-up">
             <h1 className={`text-4xl md:text-5xl font-bold text-white mb-6 tracking-tight transition-opacity duration-500`}>
               {content.name}
@@ -246,7 +246,7 @@ const App: React.FC = () => {
 
       {/* PROJECTS VIEW */}
       {currentView === 'projects' && (
-        <main className="relative max-w-screen-lg mx-auto px-6 pt-32 pb-20 md:pt-40 animate-fade-in-up">
+        <main className="relative max-w-screen-lg mx-auto px-6 md:px-8 pt-32 pb-20 md:pt-40 animate-fade-in-up">
            <h1 className="text-4xl font-bold text-white mb-8">Projects</h1>
            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pb-20">
               {(!content.projects || content.projects.length === 0) ? (
@@ -286,9 +286,10 @@ const App: React.FC = () => {
                       </div>
                       <h3 className="text-xl font-semibold text-neutral-200 mb-2">{item.text}</h3>
                       {item.description && (
-                        <p className="text-neutral-500 text-sm line-clamp-2">
-                            {item.description}
-                        </p>
+                        <div 
+                            className="text-neutral-500 text-sm line-clamp-2 [&_a]:text-neutral-300 [&_b]:text-neutral-300"
+                            dangerouslySetInnerHTML={{ __html: item.description }}
+                        />
                       )}
                     </Wrapper>
                   );
@@ -300,7 +301,7 @@ const App: React.FC = () => {
 
       {/* TALKS VIEW */}
       {currentView === 'talks' && (
-        <main className="relative max-w-screen-lg mx-auto px-6 pt-32 pb-20 md:pt-40 animate-fade-in-up">
+        <main className="relative max-w-screen-lg mx-auto px-6 md:px-8 pt-32 pb-20 md:pt-40 animate-fade-in-up">
            <h1 className="text-4xl font-bold text-white mb-10">Talks</h1>
            <div className="flex flex-col gap-6 pb-20">
               {(!content.talks || content.talks.length === 0) ? (
@@ -309,29 +310,36 @@ const App: React.FC = () => {
                  </div>
               ) : (
                 content.talks.map((item, idx) => (
-                  <a 
+                  <div 
                     key={idx} 
-                    href={item.href || '#'} 
-                    target={item.href?.startsWith('http') ? '_blank' : undefined}
-                    rel="noopener noreferrer"
-                    className="block group"
+                    className="flex flex-col sm:flex-row sm:items-baseline gap-1 sm:gap-6 group"
                   >
-                     <div className="flex flex-col sm:flex-row sm:items-baseline gap-1 sm:gap-6">
-                        <div className="text-neutral-500 font-mono text-sm shrink-0 w-32 tabular-nums">
-                            {item.date || 'Unknown Date'}
-                        </div>
-                        <div className="flex-1">
-                            <h3 className="text-lg md:text-xl font-medium text-neutral-200 group-hover:text-blue-400 transition-colors leading-snug mb-1">
-                                {item.text}
-                            </h3>
-                            {item.description && (
-                                <p className="text-neutral-500 text-sm">
-                                    {item.description}
-                                </p>
-                            )}
-                        </div>
+                     <div className="text-neutral-500 font-mono text-sm shrink-0 w-32 tabular-nums">
+                         {item.date || 'Unknown Date'}
                      </div>
-                  </a>
+                     <div className="flex-1">
+                         <h3 className="text-lg md:text-xl font-medium text-neutral-200 leading-snug mb-2">
+                             {item.href ? (
+                               <a 
+                                  href={item.href} 
+                                  target={item.href.startsWith('http') ? '_blank' : undefined}
+                                  rel="noopener noreferrer"
+                                  className="hover:text-blue-400 transition-colors"
+                               >
+                                  {item.text}
+                               </a>
+                             ) : (
+                                <span>{item.text}</span>
+                             )}
+                         </h3>
+                         {item.description && (
+                             <div 
+                                className="text-neutral-500 text-sm whitespace-pre-wrap break-words [&_a]:text-neutral-400 [&_a]:underline [&_a:hover]:text-blue-400 [&_b]:text-neutral-300 [&_b]:font-semibold"
+                                dangerouslySetInnerHTML={{ __html: item.description }}
+                             />
+                         )}
+                     </div>
+                  </div>
                 ))
               )}
            </div>
