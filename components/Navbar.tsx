@@ -1,7 +1,6 @@
 import React from 'react';
 import { Github } from 'lucide-react';
-
-const logo = '/logo.png';
+import logo from '../logo.png';
 
 const NavItem = ({ 
   children, 
